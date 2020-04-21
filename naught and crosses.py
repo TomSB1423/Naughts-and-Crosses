@@ -75,7 +75,7 @@ class Game:
         self.windowHeight = windowHeight
         self.windowWidth = windowWidth
         self.frameRate = frameRate
-        # self.
+        self.
 
     def create_window(self):
         # setting up environment
