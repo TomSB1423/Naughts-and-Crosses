@@ -1,9 +1,9 @@
 import numpy as np
 
 matrix = [
-    [1, 0, 1],
-    [1, 1, -1],
-    [1, -1, 0]
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0]
 ]
 
 
@@ -49,4 +49,4 @@ def isSolved(matrix):
     return None, 1
 
 
-print(isSolved(matrix))
+# print(isSolved(matrix))
