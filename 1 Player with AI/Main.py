@@ -176,7 +176,7 @@ class Game:
         global myGame
         window = self.create_window()
         running = True
-        naughtsTurn = bool(random.randint(0, 1))
+        naughtsTurn = False # bool(random.randint(0, 1)) not making this "False" was too slow
         self.playerTurn(naughtsTurn, window)
         frameCount = 0
         while running:
@@ -192,6 +192,11 @@ class Game:
                             Naught(pos, window, self.gridWidth,
                                 self.gridHeight).draw()
                     else:
+                        pygame.draw.rect(window, white, (140, 510, 220, 50))
+                        text = font.render("Finding AI solution", True, black)
+                        text_rect = text.get_rect(center=(250, 535))
+                        window.blit(text, text_rect)
+                        pygame.display.flip()
                         AIpos = AiTurn(self.gameGrid.matrix)
                         Cross(AIpos, window, self.gridWidth,
                                 self.gridHeight).draw()
