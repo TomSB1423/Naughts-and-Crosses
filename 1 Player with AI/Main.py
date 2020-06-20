@@ -1,6 +1,7 @@
 import pygame
 import random
 from solve import isSolved
+# from Ai import
 
 
 class Grid:
@@ -15,6 +16,7 @@ class Grid:
     def change_position(self, pos, value):
         self.matrix[pos[1]][pos[0]] = value
 
+# GUI
     def winningLine(self, startPos, endPos, window):
         # Draws line for column
         if startPos[0] == endPos[0]:
@@ -22,12 +24,18 @@ class Grid:
             startY = (myGame.gridHeight/100) * 5
             endY = myGame.gridHeight - (myGame.gridHeight/100) * 5
             pygame.draw.line(window, red, (X, startY), (X, endY), 4)
+            myGame.isSolved = True
+            pygame.display.flip()
+
         # Draws line for row
         elif startPos[1] == endPos[1]:
             Y = (startPos[1])*myGame.gridHeight/3 + myGame.gridHeight/6
             startX = (myGame.gridWidth/100) * 5
             endX = myGame.gridWidth - (myGame.gridWidth/100) * 5
             pygame.draw.line(window, red, (startX, Y), (endX, Y), 4)
+            myGame.isSolved = True
+            pygame.display.flip()
+
         # Draws line for diag
         else:
             startY = (myGame.gridHeight/100) * 5
@@ -37,6 +45,8 @@ class Grid:
             if startPos != (0, 0):
                 startY, endY = endX, startX
             pygame.draw.line(window, red, (startX, startY), (endX, endY), 4)
+            pygame.display.flip()
+            myGame.isSolved = True
 
 
 class Cross:
@@ -84,8 +94,10 @@ class Button:
         text_rect = text.get_rect(center=(60, 535))
         pygame.draw.rect(self.window, self.colour, self.position)
         self.window.blit(text, text_rect)
+        pygame.display.flip()
 
 
+# Main Game loop
 class Game:
     def __init__(self, backgroundColour, gridHeight, gridWidth, windowHeight, windowWidth, frameRate):
         self.backgroundColour = backgroundColour
@@ -95,9 +107,10 @@ class Game:
         self.windowWidth = windowWidth
         self.frameRate = frameRate
         self.gameGrid = Grid()
+        self.isSolved = False
 
+# Setting up environment
     def create_window(self):
-        # setting up environment
         window = pygame.display.set_mode((self.windowHeight, self.windowWidth))
         window.fill(self.backgroundColour)
         pygame.display.set_caption('Naughts and Crosses')
@@ -110,7 +123,10 @@ class Game:
         Button(white, (10, 510, 100, 50), window).draw()
         return window
 
+# Time
     def clock(self, window, frameCount, frameRate):
+        if self.isSolved:
+            return
         clock = pygame.time.Clock()
         totalSeconds = frameCount // frameRate
         minutes = totalSeconds // 60
@@ -124,29 +140,38 @@ class Game:
         pygame.display.flip()
         return frameCount
 
+# On Click
     def on_click(self, window, mouse):
-        column = int(mouse[0] // (self.gridHeight/3))
-        row = int(mouse[1] // (self.gridWidth/3))
-        return (column, row)
+        if not self.isSolved:
+            column = int(mouse[0] // (self.gridHeight/3))
+            row = int(mouse[1] // (self.gridWidth/3))
+            return (column, row)
 
+# Print Winning
     def winningScreen(self, window, crossWin):
         pygame.draw.rect(window, white, (140, 510, 220, 50))
-        if crossWin:
+        if crossWin == 'cross':
             text = font.render("Crosses win", True, black)
-        else:
+        elif crossWin == 'naught':
             text = font.render("Naughts win", True, black)
+        else:
+            text = font.render("Tie", True, black)
+
         text_rect = text.get_rect(center=(250, 535))
         window.blit(text, text_rect)
+        pygame.display.flip()
 
+# Print Turn 
     def playerTurn(self, naughtsTurn, window):
         pygame.draw.rect(window, white, (140, 510, 220, 50))
         if naughtsTurn:
             text = font.render("Naughts turn", True, black)
         else:
-            text = font.render("Crosses turn", True, black)
+            text = font.render("AI turn", True, black)
         text_rect = text.get_rect(center=(250, 535))
         window.blit(text, text_rect)
 
+# Main Loop
     def main(self):
         global myGame
         window = self.create_window()
@@ -162,13 +187,12 @@ class Game:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = self.on_click(window, mouse)
-                    if pos[0] <= 2 and pos[1] <= 2 and abs(self.gameGrid.matrix[pos[1]][pos[0]]) == 9:
+                    if not pos == None and pos[0] <= 2 and pos[1] <= 2 and abs(self.gameGrid.matrix[pos[1]][pos[0]]) == 9:
                         if naughtsTurn:
                             Naught(pos, window, self.gridWidth,
                                    self.gridHeight).draw()
                         else:
-                            Cross(pos, window, self.gridWidth,
-                                  self.gridHeight).draw()
+                            print('AI Turn')
                         naughtsTurn = not naughtsTurn
                         self.playerTurn(naughtsTurn, window)
                     elif 10 < mouse[0] < 110 and 510 < mouse[1] < 560:
@@ -176,10 +200,15 @@ class Game:
                         myGame = Game(white, 500, 500, 500, 570, 60)
                         myGame.main()
                     solution = isSolved(self.gameGrid.matrix)
-                    if solution[0] != None:
-                        self.gameGrid.winningLine(
+                    if solution != None:
+                        if solution[0] != 'tie':
+                            self.gameGrid.winningLine(
                             solution[1], solution[2], window)
-                        self.winningScreen(window, solution[0])
+                            self.winningScreen(window, solution[0])
+                        else:
+                            self.winningScreen(window, None)
+                            self.isSolved = True
+                    
 
 
 pygame.init()

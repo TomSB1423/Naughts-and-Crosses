@@ -1,12 +1,5 @@
 import numpy as np
 
-matrix = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0]
-]
-
-
 def isSolved(matrix):
     for i in range(np.ma.size(matrix, 1)):
         # Checks columns
@@ -46,7 +39,13 @@ def isSolved(matrix):
         starPos = (0, 2)
         endPos = (2, 0)
         return crossWin, starPos, endPos
-    return None, 1
 
-
-# print(isSolved(matrix))
+    # Check if Tie
+    openSpaces = 0
+    for y in range(0,3):
+        for x in range(0,3):
+            if matrix[x][y] == 9:
+                openSpaces += 1
+    if openSpaces == 0:
+        return ['tie']
+    return None
