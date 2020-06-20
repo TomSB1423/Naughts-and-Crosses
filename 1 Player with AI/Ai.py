@@ -28,7 +28,7 @@ def AiTurn(grid):
                 if score > bestScore:
                     bestScore = score
                     move = (x, y)
-    print(move)
+    return move
 
 def Minimax(grid, depth, maximizingPlayer):
     solved = isSolved(grid)

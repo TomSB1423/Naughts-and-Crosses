@@ -1,7 +1,7 @@
 import pygame
 import random
 from solve import isSolved
-# from Ai import
+from Ai import AiTurn
 
 
 class Grid:
@@ -151,9 +151,9 @@ class Game:
     def winningScreen(self, window, crossWin):
         pygame.draw.rect(window, white, (140, 510, 220, 50))
         if crossWin == 'cross':
-            text = font.render("Crosses win", True, black)
+            text = font.render("AI beat you", True, black)
         elif crossWin == 'naught':
-            text = font.render("Naughts win", True, black)
+            text = font.render("You win", True, black)
         else:
             text = font.render("Tie", True, black)
 
@@ -167,7 +167,7 @@ class Game:
         if naughtsTurn:
             text = font.render("Naughts turn", True, black)
         else:
-            text = font.render("AI turn", True, black)
+            text = font.render("Click for AI turn", True, black)
         text_rect = text.get_rect(center=(250, 535))
         window.blit(text, text_rect)
 
@@ -187,15 +187,17 @@ class Game:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = self.on_click(window, mouse)
-                    if not pos == None and pos[0] <= 2 and pos[1] <= 2 and abs(self.gameGrid.matrix[pos[1]][pos[0]]) == 9:
-                        if naughtsTurn:
+                    if naughtsTurn:
+                        if not pos == None and pos[0] <= 2 and pos[1] <= 2 and abs(self.gameGrid.matrix[pos[1]][pos[0]]) == 9:
                             Naught(pos, window, self.gridWidth,
-                                   self.gridHeight).draw()
-                        else:
-                            print('AI Turn')
-                        naughtsTurn = not naughtsTurn
-                        self.playerTurn(naughtsTurn, window)
-                    elif 10 < mouse[0] < 110 and 510 < mouse[1] < 560:
+                                self.gridHeight).draw()
+                    else:
+                        AIpos = AiTurn(self.gameGrid.matrix)
+                        Cross(AIpos, window, self.gridWidth,
+                                self.gridHeight).draw()
+                    naughtsTurn = not naughtsTurn
+                    self.playerTurn(naughtsTurn, window)
+                    if 10 < mouse[0] < 110 and 510 < mouse[1] < 560:
                         running = False
                         myGame = Game(white, 500, 500, 500, 570, 60)
                         myGame.main()
