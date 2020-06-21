@@ -176,7 +176,7 @@ class Game:
         global myGame
         window = self.create_window()
         running = True
-        naughtsTurn = False # bool(random.randint(0, 1)) not making this "False" was too slow
+        naughtsTurn = bool(random.randint(0, 1))
         self.playerTurn(naughtsTurn, window)
         frameCount = 0
         while running:
@@ -185,12 +185,15 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    pygame.quit()
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = self.on_click(window, mouse)
                     if naughtsTurn:
                         if not pos == None and pos[0] <= 2 and pos[1] <= 2 and abs(self.gameGrid.matrix[pos[1]][pos[0]]) == 9:
                             Naught(pos, window, self.gridWidth,
                                 self.gridHeight).draw()
+                            naughtsTurn = not naughtsTurn
+                            self.playerTurn(naughtsTurn, window)
                     else:
                         pygame.draw.rect(window, white, (140, 510, 220, 50))
                         text = font.render("Finding AI solution", True, black)
@@ -200,8 +203,8 @@ class Game:
                         AIpos = AiTurn(self.gameGrid.matrix)
                         Cross(AIpos, window, self.gridWidth,
                                 self.gridHeight).draw()
-                    naughtsTurn = not naughtsTurn
-                    self.playerTurn(naughtsTurn, window)
+                        naughtsTurn = not naughtsTurn
+                        self.playerTurn(naughtsTurn, window)
                     if 10 < mouse[0] < 110 and 510 < mouse[1] < 560:
                         running = False
                         myGame = Game(white, 500, 500, 500, 570, 60)
@@ -226,4 +229,3 @@ white = (255, 255, 255)
 red = (255, 0, 0)
 myGame = Game(white, 500, 500, 500, 570, 60)
 myGame.main()
-pygame.quit()
