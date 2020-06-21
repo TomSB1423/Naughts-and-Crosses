@@ -19,6 +19,15 @@ def AiTurn(grid):
     a = -np.Infinity
     b = np.Infinity
 
+    # Reduces the wait time py moving to the center if it is the first go
+    openSpaces = 0
+    for y in range(0,3):
+        for x in range(0,3):
+            if grid[x][y] == 9:
+                openSpaces += 1
+    if openSpaces == 9:
+        return (1, 1)
+
     for y in range(0,3):
         for x in range(0,3):
             # if empty look for solutions

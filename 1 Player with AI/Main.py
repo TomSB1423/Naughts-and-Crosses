@@ -194,7 +194,8 @@ class Game:
                                 self.gridHeight).draw()
                             naughtsTurn = not naughtsTurn
                             self.playerTurn(naughtsTurn, window)
-                    else:
+                    solution = isSolved(self.gameGrid.matrix)
+                    if not naughtsTurn and solution == None:
                         pygame.draw.rect(window, white, (140, 510, 220, 50))
                         text = font.render("Finding AI solution", True, black)
                         text_rect = text.get_rect(center=(250, 535))
@@ -229,3 +230,4 @@ white = (255, 255, 255)
 red = (255, 0, 0)
 myGame = Game(white, 500, 500, 500, 570, 60)
 myGame.main()
+
